@@ -27,9 +27,9 @@ class SessionsController extends Controller
         ]);
 
         // 通过给定的信息来尝试对用户进行认证（成功后会自动启动会话）,第一个数组就是认证的参数: ['参数名'=>'参数值', '参数名'=>'参数值]，第二个参数true就是'记住我'功能
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->has('remember'))) {
             //登录成功后的相关操作
-
+            session()->flash('success', '欢迎回来！');
             //重定向个人信息页面。。Auth::user()：：获取当前的认证用户，一个提供者的模型
             return redirect()->route('users.show', [Auth::user()]);
         } else {
