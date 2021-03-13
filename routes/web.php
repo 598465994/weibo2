@@ -37,3 +37,12 @@ Route::resource('users', 'UsersController');
 // Route::patch('/users/{user}', 'UsersController@update')->name('users.update');
 // //删除用户
 // Route::delete('/users/{user}', 'UsersController@destroy')->name('users.destroy');
+
+
+// 会话
+//显示登录页面
+Route::get('/login', 'SessionsController@create')->name('login');
+//登录页面的表单提交
+Route::post('/login', 'SessionsController@store')->name('login');
+//推出登录
+Route::delete('/logout', 'SessionsController@destroy')->name('logout');
