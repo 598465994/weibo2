@@ -43,4 +43,20 @@ class SessionsController extends Controller
 
         return;
     }
+
+    /**
+     * 用户退出登录
+     */
+    public function destroy()
+    {
+        //使用户退出登录
+        Auth::logout();
+
+        session()->flash('success', '您已成功退出！');
+
+        // 重定向到命名路由，就是路由别名name('login');
+        return redirect()->route('login');
+        // redirect重定向 URL 相当于在域名后面拼接login
+        // return redirect('login');
+    }
 }
