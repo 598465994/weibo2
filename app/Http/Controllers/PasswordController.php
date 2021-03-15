@@ -68,4 +68,63 @@ class PasswordController extends Controller
 
         return redirect()->back();
     }
+
+    /**
+     * 找回密码页面
+     */
+    public function showResetForm(Request $request)
+    {
+        $token = $request->route()->parameter('token');
+        return view('auth.passwords.reset', compact('token'));
+    }
+
+    /**
+     * 重置密码
+     */
+    public function reset(Request $request)
+    {
+        //验证数据
+        $this->validate($request, [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:8'
+        ]);
+
+        $email = $request->email;
+        $token = $request->token;
+
+        //找回密码链接有效时间
+        $expires = 60 * 10;
+
+        // 获取对应用户
+        $user = User::where('email', $email)->first();
+
+        // 用户不存在
+        if (is_null($user)) {
+            session()->flash('danger', '邮箱未注册');
+            return redirect()->back()->withInput();
+        }
+
+        //读取充值记录
+        $record = (array) DB::table('password_resets')->where('email', $email)->first();
+
+        //如果记录不存在
+        if (is_null($request)) {
+            session()->flash('danger', '未找到重置记录');
+            return redirect()->back();
+        }
+
+        //检查是否过期。。当前时间不在添加时间和有效时间内
+        if (Carbon::parse($record['created_at'])->addSeconds($expires)->isPast()) {
+            session()->flash('danger', '令牌错误');
+            return redirect()->back();
+        }
+
+        // 更新用户密码
+        $user->update(['password' => bcrypt($request->password)]);
+
+        // 5.4. 提示用户更新成功
+        session()->flash('success', '密码重置成功，请使用新密码登录');
+        return redirect()->route('login');
+    }
 }
