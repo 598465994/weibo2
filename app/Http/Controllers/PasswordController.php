@@ -13,6 +13,20 @@ use Carbon\Carbon;
 
 class PasswordController extends Controller
 {
+
+    public function __construct()
+    {
+        //只有showResetForm方法，找回密码页面，做限流，1分钟只能访问两次
+        $this->middleware('throttle:1,2', [
+            'only' => ['showResetForm']
+        ]);
+
+        //限流邮件发送只能10分钟3次
+        $this->middleware('throttle:10,3', [
+            'only' => ['sendResetLinkEmail']
+        ])
+    }
+
     /**
      * 填写email页面
      */
