@@ -30,7 +30,7 @@ class UsersController extends Controller
     }
 
     /**
-     * 用户注册
+     * 用户注册页面
      */
     public function create()
     {
@@ -67,6 +67,15 @@ class UsersController extends Controller
 
         session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
         return redirect()->route('users.show', [$user]);
+    }
+
+    /**
+     * 所用用户列表
+     */
+    public function index()
+    {
+        $users = User::paginate(6);
+        return view('users.index', compact('users'));
     }
 
     /**
