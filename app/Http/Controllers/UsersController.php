@@ -8,6 +8,27 @@ use Auth;
 
 class UsersController extends Controller
 {
+
+    /**
+     * 自动执行
+     */
+    public function __construct()
+    {
+        /**
+         * middleware::两个参数，一个时中间件名称，一个是要进行过滤的动作
+         * auth::允许已登录访问
+         * guest::未登录用户访问
+         * except::指定不过滤的动作，首选except,这样新增控制器方法时，默认时安全的
+         * only::指定过滤的动作
+         */
+        $this->middleware('auth', [
+            'except' => ['show', 'create', 'store']
+        ]);
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
+
     /**
      * 用户注册
      */
@@ -54,6 +75,12 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
+        /**
+         * authorize::方法来验证用户授权策略
+         * 第一个参数是::授权策略名称
+         * 第二个参数是::进行授权验证的数据
+         */
+        $this->authorize('update', $user);
         return view('users.edit', compact('user'));
     }
 
@@ -64,6 +91,9 @@ class UsersController extends Controller
      */
     public function update(Uesr $user, Request $request)
     {
+        //验证用户授权策略
+        $this->authorize('update', $user);
+
         // nullable提交空白也能通过
         $this->validate($request, [
             'name' => 'required|max:50',

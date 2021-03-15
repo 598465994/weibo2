@@ -8,6 +8,23 @@ use Auth;
 class SessionsController extends Controller
 {
     /**
+     * 自动执行
+     */
+    public function __construct()
+    {
+        /**
+         * middleware::两个参数，一个时中间件名称，一个是要进行过滤的动作
+         * auth::允许已登录访问
+         * guest::未登录用户访问
+         * except::指定不过滤的动作，首选except,这样新增控制器方法时，默认时安全的
+         * only::指定过滤的动作
+         */
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
+
+    /**
      * 登录页面
      */
     public function create()
@@ -31,7 +48,8 @@ class SessionsController extends Controller
             //登录成功后的相关操作
             session()->flash('success', '欢迎回来！');
             //重定向个人信息页面。。Auth::user()：：获取当前的认证用户，一个提供者的模型
-            return redirect()->route('users.show', [Auth::user()]);
+            $fallback = route('users.show', Auth::user());
+            return redirect()->intended($fallback);
         } else {
             //登录失败的相关操作
             session()->flash('danger', '很抱歉，您的邮箱和密码不匹配');
