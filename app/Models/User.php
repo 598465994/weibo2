@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 //Notifiable 是消息通知相关功能引用
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -64,5 +65,17 @@ class User extends Authenticatable
         $hash = md5($user_email);
         //将邮箱与链接、尺寸拼接成完整的url
         return "http://www.gravatar.com/avatar/$hash?s=$size";
+    }
+
+    /**
+     * boot 方法会在用户模型类完成初始化之后进行加载，因此我们对事件的监听需要放在该方法中
+     */
+    public static function boot()
+    {
+        parent::boot();
+        //用户的激活令牌需要在用户创建（注册）之前就先生成好
+        static::creating(function ($user) {
+            $user->activation_token = Str::random(10);
+        });
     }
 }

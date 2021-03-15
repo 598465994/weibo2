@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Auth;
+use Mail;
 
 class UsersController extends Controller
 {
@@ -16,13 +17,14 @@ class UsersController extends Controller
     {
         /**
          * middleware::两个参数，一个时中间件名称，一个是要进行过滤的动作
-         * auth::允许已登录访问
-         * guest::未登录用户访问
+         * auth::未登录访问
+         * guest::已登录用户访问
          * except::指定不过滤的动作，首选except,这样新增控制器方法时，默认时安全的
          * only::指定过滤的动作
          */
         $this->middleware('auth', [
-            'except' => ['show', 'create', 'store', 'index']
+            //这些是不过滤的动作
+            'except' => ['show', 'create', 'store', 'index', 'confirmEmail']
         ]);
         $this->middleware('guest', [
             'only' => ['create']
@@ -63,10 +65,26 @@ class UsersController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        Auth::login($user);
+        $this->sendEmailConfirmationTo($user);
 
-        session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
-        return redirect()->route('users.show', [$user]);
+        session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收。');
+        return redirect()->route('home');
+    }
+
+    /**
+     * 邮件发送
+     */
+    protected function sendEmailConfirmationTo($user)
+    {
+        $view = 'emails.confirm';
+        $data = compact('user');
+        $from = 'summer@example.com';
+        $name = 'Summer';
+        $to = $user->email;
+        $subject = "感谢注册 Weibo 应用！请确认你的邮箱。";
+        Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject) {
+            $message->from($from, $name)->to($to)->subject($subject);
+        });
     }
 
     /**
@@ -134,5 +152,24 @@ class UsersController extends Controller
         return back();
     }
 
+    /**
+     * 邮件激活
+     */
+    public function confirmEmail($token)
+    {
+        // firstOrFail取出第一个用户
+        $user = User::where('activation_token', $token)->firstOrFail();
+
+        // 更新用户数据
+        $user->activated = true;
+        $user->activation_token = null;
+        $user->save();
+
+        //用户登录
+        Auth::login($user);
+
+        session()->flash('success', '恭喜你，激活成功！');
+        return redirect()->route('users.show', [$user]);
+    }
 
 }

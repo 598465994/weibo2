@@ -46,3 +46,7 @@ Route::get('/login', 'SessionsController@create')->name('login');
 Route::post('/login', 'SessionsController@store')->name('login');
 //推出登录
 Route::delete('/logout', 'SessionsController@destroy')->name('logout');
+
+
+// 邮件激活页面
+Route::get('singnup/confirm/{token}', 'UsersController@confirmEmail')->name('confirm_email');
