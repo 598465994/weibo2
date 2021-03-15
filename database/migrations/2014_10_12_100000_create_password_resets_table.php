@@ -14,9 +14,12 @@ class CreatePasswordResetsTable extends Migration
     public function up()
     {
         Schema::create('password_resets', function (Blueprint $table) {
+            // index()未邮箱加上索引
             $table->string('email')->index();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
+            $table->string('token')->index();
+            //创建一个添加时间。。timestamps默认创建created_at添加时间和updated_at更新时间
+            //timestamp::单独添加一个created_at添加时间字段
+            $table->timestamp('created_at');
         });
     }
 

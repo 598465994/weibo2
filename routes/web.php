@@ -50,3 +50,14 @@ Route::delete('/logout', 'SessionsController@destroy')->name('logout');
 
 // 邮件激活页面
 Route::get('singnup/confirm/{token}', 'UsersController@confirmEmail')->name('confirm_email');
+
+
+// 忘记密码页面
+// 填写email表单
+Route::get('password/reset', 'PasswordController@showLinkRequestForm')->name('password.request');
+// 邮件表单提交
+Route::post('password/email', 'PasswordController@sendResetLinkEmail')->name('password.email');
+// 更新密码的表单，喊token
+Route::get('password/reset/{token}', 'PasswordController@showResetForm')->name('password.reset');
+// 忘记密码页面提交表单，修改密码
+Route::post('password/reset', 'PasswordController@reset')->name('password.update');
