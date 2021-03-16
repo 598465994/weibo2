@@ -34,4 +34,20 @@ class StatusesController extends Controller
         session()->flash('success', '发布成功！');
         return redirect()->back();
     }
+
+
+    /**
+     * 删除微博
+     */
+    public function destroy(Status $status)
+    {
+        //自动授权策略，表示当前微博的 user_id 等于 用户的 id，才往下执行， 不等于就会报错
+        $this->authorize('destroy', $status);
+
+        //删除数据
+        $status->delete();
+
+        session()->flash('success', '微博已被成功删除！');
+        return redirect()->back();
+    }
 }
