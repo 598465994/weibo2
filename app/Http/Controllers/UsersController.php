@@ -16,17 +16,22 @@ class UsersController extends Controller
     public function __construct()
     {
         /**
-         * middleware::两个参数，一个时中间件名称，一个是要进行过滤的动作
-         * auth::未登录访问
-         * guest::已登录用户访问
-         * except::指定不过滤的动作，首选except,这样新增控制器方法时，默认时安全的
-         * only::指定过滤的动作
+         * Auth 中间件来验证用户的身份
+         * 如果用户未通过身份验证，则 Auth 中间件会把用户重定向到登录页面
+         * 如果用户通过了身份验证，则 Auth 中间件会通过此请求并接着往下执行
+         * 只允许已登录用户访问之外
          */
         $this->middleware('auth', [
-            //这些是不过滤的动作
+            //except 方法来设定 指定动作 不使用 Auth 中间件进行过滤。。就是一下动作不需要中间件auth来处理，，， 除了此处指定的动作以外，所有其他动作都必须登录用户才能访问
             'except' => ['show', 'create', 'store', 'index', 'confirmEmail']
         ]);
+
+        /**
+         * guest 中间件是没有用户登录
+         * 用于指定一些只允许未登录用户访问的动作
+         */
         $this->middleware('guest', [
+            //only 方法来设定 指定动作 使用 gust 中间件进行过滤。。。此处指定的动作以外，所有其他动作必须要登录才能访问。。。。就是登录过后的用户不能再打开注册页面
             'only' => ['create']
         ]);
 

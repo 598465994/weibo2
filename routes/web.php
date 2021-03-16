@@ -61,3 +61,12 @@ Route::post('password/email', 'PasswordController@sendResetLinkEmail')->name('pa
 Route::get('password/reset/{token}', 'PasswordController@showResetForm')->name('password.reset');
 // 忘记密码页面提交表单，修改密码
 Route::post('password/reset', 'PasswordController@reset')->name('password.update');
+
+
+//resource 定义微博路由
+Route::resource('statuses', 'StatusesController', ['only'=>['store', 'destroy']]);
+// // 下面同等下面一句话
+// //创建微博
+// Route::post('statuses', 'StatusesController@store')->name('statuses.store');
+// //删除微博
+// Route::delete('statuses/{status}', 'StatusesController@destroy')->name('statuses.destroy');

@@ -16,4 +16,14 @@ class Status extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * The attributes that are mass assignable.
+     * fillable：过滤用户提交的字段，只用包含在该属性中的字段才能被正常更新
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'content',
+    ];
 }
