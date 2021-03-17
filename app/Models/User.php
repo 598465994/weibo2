@@ -108,8 +108,7 @@ class User extends Authenticatable
                                 ->with('user')
                                 ->orderBy('created_at', 'desc');
 
-
-        return $this->statuses()->orderBy('created_at', 'desc');
+        return $weibo_lists;
     }
 
 
