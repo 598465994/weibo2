@@ -11,6 +11,7 @@ class Status extends Model
 
     /**
      * 指明一条微博属于一个用户
+     * 一对一
      */
     public function user()
     {

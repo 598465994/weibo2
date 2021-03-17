@@ -81,6 +81,7 @@ class User extends Authenticatable
 
     /**
      * 指明一用户拥有多条微博。因此在用户模型中我们使用了微博动态的复数形式 statuses 来作为定义的函数名
+     * 一对多
      */
     public function statuses()
     {
@@ -95,4 +96,74 @@ class User extends Authenticatable
     {
         return $this->statuses()->orderBy('created_at', 'desc');
     }
+
+
+    /**
+     * 用户关联粉丝，，，获取粉丝列表     就是用户查看自己有哪些粉丝
+     * 多对多
+     */
+    public function followers()
+    {
+        // // 在 Laravel 中会默认将两个关联模型的名称进行合并，并按照字母排序，因此我们生成的关联关系表名称会是 user_user
+        // return $this->belongsToMany(User::class);
+
+        // // 自定义生成的名称，把关联表名改为 followers
+        // return $this->belongsToMany(User::class, 'followers');
+
+        /**
+         * 通过传递额外参数至 belongsToMany 方法来自定义数据表里的字段名称
+         *  方法的第三个参数 user_id 是定义在关联中的模型外键名
+         * 第四个参数 follower_id 则是要合并的模型外键名
+         */
+        return $this->belongsToMany(User::class, 'followers', 'user_id', 'follower_id');
+    }
+
+    /**
+     * 粉丝关联用户，，，获取关注人列表    就是粉丝查看自己关注了哪些用户
+     */
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
+    }
+
+
+    /**
+     * 定义关注
+     */
+    public function follow($user_ids)
+    {
+        // is_array:用户判断参数是否未数组
+        // 如果 $user_ids 不是数组
+        if ( ! is_array($user_ids) ) {
+            // 把  $user_ids  函数创建一个包含变量名和它们的值的数组
+            $user_ids = compact('user_ids');
+        }
+
+        //添加粉丝
+        // attach  能重复添加
+        // sync  不会重复添加 会接收两个参数，第一个参数是要进行添加的 id ，第二个参数指明是否要移除其他不包含在关联的  id  数组中的  id  ，true 表示移除， false 表示不移除。 默认值未 true 。 我们关注一个新用户的时候 任然要保持之前已关注的关系，不能移除， 这里填写false
+        return $this->followers()->sync($user_ids, false);
+    }
+
+    /**
+     * 定义取消关注
+     */
+    public function unfollow($user_ids)
+    {
+        if ( ! is_array($user_ids) ) {
+            $user_ids = compact('users_ids');
+        }
+
+        return $this->followings()->detach($user_ids);
+    }
+
+    /**
+     * 用户A是否关联用户B
+     */
+    public function isFollowing($user_id)
+    {
+        return $this->followings->contatins($user_id);
+    }
+
+
 }
