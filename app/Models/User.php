@@ -94,6 +94,21 @@ class User extends Authenticatable
      */
     public function feed()
     {
+        /**
+         * 通过 followings 方法去除所用关注人列表的信息
+         * pluck  将 id 分离并负值给 user_ids
+         */
+        $user_ids = $this->followings->pluck('id')->toArray();
+
+        //将用户 id 加入到 当前  user_ids 数组中
+        array_push($user_ids, $this->id);
+
+        // 使用 Laravel 提供的 查询构造器 whereIn 方法取出所有用户的微博动态并进行倒序排序；
+        $weibo_lists = Status::whereIn('user_id', $user_ids)
+                                ->with('user')
+                                ->orderBy('created_at', 'desc');
+
+
         return $this->statuses()->orderBy('created_at', 'desc');
     }
 
