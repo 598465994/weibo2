@@ -70,3 +70,10 @@ Route::resource('statuses', 'StatusesController', ['only'=>['store', 'destroy']]
 // Route::post('statuses', 'StatusesController@store')->name('statuses.store');
 // //删除微博
 // Route::delete('statuses/{status}', 'StatusesController@destroy')->name('statuses.destroy');
+
+
+
+//关注的用户列表页面
+Route::get('users/{user}/followings', 'UsersController@followings')->name('users.followings');
+//粉丝列表页面
+Route::get('users/{user}/followers', 'UsersController@followers')->name('users.followers');
