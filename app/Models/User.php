@@ -142,7 +142,7 @@ class User extends Authenticatable
         //添加粉丝
         // attach  能重复添加
         // sync  不会重复添加 会接收两个参数，第一个参数是要进行添加的 id ，第二个参数指明是否要移除其他不包含在关联的  id  数组中的  id  ，true 表示移除， false 表示不移除。 默认值未 true 。 我们关注一个新用户的时候 任然要保持之前已关注的关系，不能移除， 这里填写false
-        return $this->followers()->sync($user_ids, false);
+        return $this->followings()->sync($user_ids, false);
     }
 
     /**
@@ -150,8 +150,9 @@ class User extends Authenticatable
      */
     public function unfollow($user_ids)
     {
+
         if ( ! is_array($user_ids) ) {
-            $user_ids = compact('users_ids');
+            $user_ids = compact('user_ids');
         }
 
         return $this->followings()->detach($user_ids);
@@ -162,7 +163,7 @@ class User extends Authenticatable
      */
     public function isFollowing($user_id)
     {
-        return $this->followings->contatins($user_id);
+        return $this->followings->contains($user_id);
     }
 
 
